@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kystskatter: Gamleskolen på Sistranda (Frøya Skolemuseum)</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+     crossorigin=""/>
+
+    <style>
+        /* Map container styling */
+        .map-container {
+            height: 300px; width: 100%; border-radius: 0.5rem; border: 1px solid #e5e7eb; background-color: #f9fafb;
+            display: flex; align-items: center; justify-content: center; text-align: center; color: #6b7280;
+        }
+        /* 3D model container styling */
+        .scan-container iframe {
+            width: 100%; height: 400px; border: none; border-radius: 0.5rem;
+        }
+        /* Font setup */
+        body { font-family: 'Inter', sans-serif; }
+        /* Spacing between info sections */
+        .info-section > div { margin-bottom: 1.5rem; }
+        /* Simple audio player styling */
+        .audio-player-container {
+            background-color: #f3f4f6; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem; border: 1px solid #e5e7eb;
+        }
+        .audio-player-container audio { width: 100%; }
+        .audio-player-container p { margin-bottom: 0.5rem; font-size: 0.875rem; color: #4b5563; }
+        /* Image gallery placeholder styling */
+        .gallery-placeholder {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 0.5rem;
+            padding: 1rem; background-color: #f9fafb; border-radius: 0.5rem; border: 1px dashed #d1d5db; min-height: 120px;
+            align-items: center; justify-content: center;
+        }
+         .gallery-placeholder img {
+            width: 100%; height: 80px; object-fit: cover; border-radius: 0.25rem; border: 1px solid #e5e7eb;
+        }
+         .gallery-placeholder span {
+             grid-column: 1 / -1; text-align: center; color: #6b7280; font-size: 0.875rem;
+         }
+         /* Simple timeline styling */
+         .timeline ul { list-style: none; padding-left: 1rem; border-left: 2px solid #d1d5db; }
+         .timeline li { position: relative; padding-left: 1.5rem; margin-bottom: 1rem; }
+         .timeline li::before { content: ''; position: absolute; left: -0.375rem; top: 0.375rem; width: 0.5rem; height: 0.5rem; background-color: #3b82f6; border-radius: 50%; }
+         .timeline time { display: block; font-size: 0.875rem; color: #6b7280; margin-bottom: 0.25rem; }
+
+    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <header class="bg-white shadow-sm p-4 mb-8">
+        <div class="container mx-auto">
+            <a href="index.html" class="text-blue-600 hover:underline">&larr; Tilbake til Kystskatter Oversikt</a>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 md:px-0">
+
+        <article class="bg-white rounded-lg shadow-lg mb-12 overflow-hidden">
+            <header class="p-6 border-b border-gray-200">
+                <h1 class="text-3xl font-bold text-gray-900">Gamleskolen på Sistranda (Frøya Skolemuseum)</h1>
+                <p class="text-sm text-gray-500 mt-1">Sted: Skolegården, Sistranda Barneskole, Frøya | Åpnet som museum: Sommer 2022</p>
+            </header>
+
+            <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-8">
+
+                <section>
+                    <h2 class="text-xl font-semibold mb-3 text-blue-700">Om Gamleskolen - En Kystskatt Gjenopplivet</h2>
+                    <p class="mb-4 text-gray-700 leading-relaxed">
+                        I hjertet av Sistranda, i skolegården til den moderne barneskolen, står en bemerkelsesverdig bevart bygning kjent som "Gamle Skolestua". Denne historiske perlen huser i dag <strong>Frøya Skolemuseum</strong>, et levende museum dedikert til å vise frem utviklingen av skolegangen på Frøya. Offisielt åpnet sommeren 2022 etter en imponerende restaureringsinnsats drevet av lokalsamfunnet, representerer bygget mye mer enn bare tømmer og takstein; det er en håndgripelig kobling til Frøyas rike fortid, med røtter tilbake til 1870-tallet.
+                    </p>
+                    <p class="mb-6 text-gray-700 leading-relaxed">
+                        Denne lille, men betydningsfulle bygningen symboliserer den dype forbindelsen Frøya-samfunnet har til sin arv. Reisen fra funksjonell skolestue, via forfall og rivningstrussel, til dagens status som et verdsatt museum og kulturminne, er en fascinerende fortelling. Plassert midt i Frøyas administrative sentrum, Sistranda, understreker museet sin relevans også i dagens øysamfunn.
+                    </p>
+
+                    <h3 class="text-xl font-semibold mb-3 text-blue-700">Kartlokasjon</h3>
+                    <div id="map-gamleskolen" class="map-container">
+                         Laster kart...
+                    </div>
+                    <p class="text-xs text-gray-500 mt-1 mb-8">Kartet viser plasseringen av Gamleskolen i skolegården på Sistranda.</p>
+
+                    <div class="info-section border-t border-gray-200 pt-6">
+
+                        <div>
+                            <h3 class="text-lg font-semibold mb-2 text-blue-700">En Reise Gjennom Tiden</h3>
+                             <p class="text-gray-700 leading-relaxed">
+                                <strong>Opprinnelse (1870-tallet):</strong> Bygget som en av de første dedikerte skolebygningene på Frøya, i en tid med "kretsskoler". Den inneholdt opprinnelig to klasserom. <br>
+                                <strong>Tiår med Tjeneste:</strong> Utdannet generasjoner av Frøya-barn, parallelt med Sistrandas vekst.<br>
+                                <strong>Forfall:</strong> Ble overflødig med etableringen av nyere skolebygg og forfalt gradvis.
+                            </p>
+                        </div>
+
+                        <div>
+                            <h3 class="text-lg font-semibold mb-2 text-blue-700">Reddet av Lokalsamfunnet</h3>
+                             <p class="text-gray-700 leading-relaxed">
+                                På 2010-tallet var byggets tilstand så dårlig at riving ble foreslått flere ganger. Men en sterk motstand vokste frem, drevet av grendalag, råd ved skolen, politikere og engasjerte innbyggere. Sentralt stod "dugnadsgjengen", ledet av lokalhistoriker, forfatter og poet <strong>Hans Anton Grønskag</strong>. Deres utrettelige innsats, kombinert med folkelig engasjement, snudde utviklingen og sikret at Frøyas eldste gjenværende skolebygg ble reddet.
+                            </p>
+                        </div>
+
+                        <div>
+                            <h3 class="text-lg font-semibold mb-2 text-blue-700">Gjenoppliving: Restaurering og Museum</h3>
+                             <p class="text-gray-700 leading-relaxed">
+                                Dugnadsgjengen restaurerte bygget møysommelig for å gjenskape de originale klasserommene fra sent 1800-/tidlig 1900-tall. En rik samling gjenstander ble samlet inn "fra fjern og nær". Resultatet er et "prakteksemplar av sitt slag", hvor besøkende kan oppleve autentisk innredede klasserom.
+                            </p>
+                        </div>
+
+                        <div class="border-t border-gray-200 pt-6 timeline">
+                             <h3 class="text-lg font-semibold mb-3 text-blue-700">Historisk Tidslinje</h3>
+                             <ul>
+                                 <li><time>1870-tallet</time> Bygging og åpning som skolestue.</li>
+                                 <li><time>Sent 1800-tall - Midt 1900-tall</time> I drift som skole.</li>
+                                 <li><time>Sent 1900-tall - Tidlig 2000-tall</time> Periode med forfall og manglende bruk.</li>
+                                 <li><time>Nov 2013</time> Første dokumenterte forslag om riving; utsatt.</li>
+                                 <li><time>Ca. 2015/2016</time> Nytt forslag om riving; utsatt.</li>
+                                 <li><time>Ca. 2016-2021</time> Restaurering gjennom dugnad ledet av H.A. Grønskag.</li>
+                                 <li><time>Vår/Sommer 2022</time> Offisiell åpning som Frøya Skolemuseum.</li>
+                                 <li><time>2022+</time> Fungerer som museum, samlingssted og læringsarena.</li>
+                                 <li><time>2024+</time> Formelt anerkjent som kulturminne i kommunens planer.</li>
+                             </ul>
+                        </div>
+
+                        <div class="border-t border-gray-200 pt-6">
+                             <h3 class="text-lg font-semibold mb-3 text-blue-700">Viktige Personer</h3>
+                             <ul class="list-disc list-inside text-gray-700 space-y-1">
+                                 <li><b>Hans Anton Grønskag</b> - Lokalhistoriker, forfatter, poet. Ledet dugnadsarbeidet og var avgjørende for bevaringen. Forfatter av "Vår grend, vår skole, vår framtid!".</li>
+                                 <li><b>Dugnadsgjengen</b> - Den frivillige gruppen som utførte restaureringsarbeidet.</li>
+                                 <li><b>Lokalsamfunnet på Frøya</b> - Viste et sterkt engasjement for å bevare bygget.</li>
+                             </ul>
+                        </div>
+
+                        <div class="border-t border-gray-200 pt-6">
+                            <h3 class="text-lg font-semibold mb-3 text-blue-700">Hør Historier (Eksempel)</h3>
+                            <div class="audio-player-container">
+                                <p>Hans Anton Grønskag forteller om restaureringsprosessen:</p>
+                                <audio controls src="[lyd/gamleskolen_historie1.mp3]">
+                                    Nettleseren din støtter ikke lydelementet.
+                                    <a href="[lyd/gamleskolen_historie1.mp3]">Last ned lydklipp</a>
+                                </audio>
+                            </div>
+                             <div class="audio-player-container">
+                                <p>Elev fra 1950-tallet minnes skoletiden:</p>
+                                <audio controls src="[lyd/gamleskolen_historie2.ogg]">
+                                    Nettleseren din støtter ikke lydelementet.
+                                    <a href="[lyd/gamleskolen_historie2.ogg]">Last ned lydklipp</a>
+                                </audio>
+                            </div>
+                        </div>
+
+                        <div class="border-t border-gray-200 pt-6">
+                             <h3 class="text-lg font-semibold mb-3 text-blue-700">Kilder og Referanser (Eksempler)</h3>
+                             <ul class="list-disc list-inside text-gray-700 space-y-1 text-sm">
+                                 <li>Grønskag, Hans Anton. "Vår grend, vår skole, vår framtid!".</li>
+                                 <li>Frøya Kommunes Kulturmiljøplan 2025-2029 (Utkast).</li>
+                                 <li>Artikler fra lokalaviser (f.eks. Frøya.no, Hitra-Frøya).</li>
+                                 <li>Informasjon fra Frøya Kulturhus.</li>
+                                 <li>Muntlige kilder / Intervjuer med involverte.</li>
+                             </ul>
+                        </div>
+
+                        <div class="border-t border-gray-200 pt-6">
+                             <h3 class="text-lg font-semibold mb-3 text-blue-700">Bevaringsstatus og Fremtid</h3>
+                             <p class="text-gray-700 leading-relaxed">
+                                 Gamleskolen er restaurert og drives som Frøya Skolemuseum. Bygget er formelt anerkjent som et kulturminne av Frøya kommune og inkludert i relevante planer. Museet er en aktiv del av lokalsamfunnet, brukt til både formidling, undervisning og sosiale arrangementer. Fremtiden sikres gjennom kommunal anerkjennelse og fortsatt lokalt engasjement.
+                             </p>
+                        </div>
+
+                    </div>
+                </section>
+
+                <section>
+                    <h3 class="text-xl font-semibold mb-3 text-blue-700">Utforsk Skolen i 3D</h3>
+                    <div class="scan-container bg-gray-200 rounded-lg flex items-center justify-center mb-6">
+                        <iframe title="School Site captured from drone" class="rounded-lg" frameborder="0" allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true" allow="autoplay; fullscreen; xr-spatial-tracking" xr-spatial-tracking execution-while-out-of-viewport execution-while-not-rendered web-share src="https://sketchfab.com/models/f8914c3aa6ae47f49f5476a811ee4ec9/embed?autospin=1&ui_theme=dark"> </iframe>
+                    </div>
+                     <p class="text-xs text-gray-500 mt-[-1.5rem] mb-6 text-center p-1">
+                        <a href="https://sketchfab.com/3d-models/school-site-captured-from-drone-f8914c3aa6ae47f49f5476a811ee4ec9" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline">Se modellen på Sketchfab</a>
+                     </p>
+
+                    <div class="mb-8">
+                        <h3 class="text-xl font-semibold mb-3 text-blue-700">Bildegalleri (Eksempler)</h3>
+                        <div class="gallery-placeholder">
+                            <img src="https://placehold.co/200x150/6366f1/FFFFFF?text=Utside+av+skolen" alt="[Bilde av Gamleskolen utvendig]">
+                            <img src="https://placehold.co/200x150/4f46e5/FFFFFF?text=Klasserom+1" alt="[Bilde av et restaurert klasserom]">
+                            <img src="https://placehold.co/200x150/4338ca/FFFFFF?text=Gamle+pulter" alt="[Bilde av gamle skolepulter]">
+                            <img src="https://placehold.co/200x150/3730a3/FFFFFF?text=Dugnadsgjengen" alt="[Bilde fra dugnadsarbeidet]">
+                           </div>
+                        <p class="text-xs text-gray-500 mt-1">Klikk på bildene for større visning (funksjonalitet må legges til).</p>
+                    </div>
+
+                    <div class="mb-8 border-t border-gray-200 pt-6">
+                        <h3 class="text-xl font-semibold mb-3 text-blue-700">Teknisk Dokumentasjon (3D-Modell)</h3>
+                        <p class="text-gray-700 leading-relaxed mb-2">
+                            Den digitale 3D-modellen vist over er samlet inn ved hjelp av [Metode, f.eks. droneskanning og fotogrammetri - sjekk Sketchfab-siden for detaljer hvis mulig].
+                        </p>
+                        <ul class="list-disc list-inside text-gray-700 space-y-1 text-sm">
+                            <li>Dato for datainnsamling: [Se Sketchfab-modellinfo]</li>
+                            <li>Utstyr brukt: [Se Sketchfab-modellinfo]</li>
+                            <li>Modell laget av: [Se Sketchfab-modellinfo]</li>
+                            <li><a href="https://sketchfab.com/3d-models/school-site-captured-from-drone-f8914c3aa6ae47f49f5476a811ee4ec9" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline">Mer info på Sketchfab</a></li>
+                        </ul>
+                    </div>
+
+                    <h3 class="text-xl font-semibold mb-3 text-blue-700">Besøksinformasjon og Opplevelser</h3>
+                    <ul class="list-disc list-inside text-gray-700 space-y-2 mb-8">
+                        <li><b>Autentiske Klasserom:</b> Opplev skolehverdagen fra gamle dager.</li>
+                        <li><b>Rik Gjenstandssamling:</b> Se gamle bøker, pulter, kart og utstyr.</li>
+                        <li><b>Unik Beliggenhet:</b> Midt i skolegården til dagens barneskole.</li>
+                        <li><b>Åpningstider (Sommer):</b> Torsdager kl. 11:00 - 13:00 (typisk uke 26-32/33). Sjekk lokalt for oppdatert info.</li>
+                        <li><b>Inngang:</b> Liten avgift (f.eks. 50 NOK).</li>
+                        <li><b>Omvisning:</b> Kontakt Frøya Kulturhus for avtale utenom åpningstid.</li>
+                        <li><b>Levende Museum:</b> Brukes også til møter og sosiale arrangementer.</li>
+                    </ul>
+
+                    <div class="border-t border-gray-200 pt-6">
+                        <h3 class="text-xl font-semibold mb-3 text-blue-700">Relaterte Kystskatter / Steder</h3>
+                        <p class="text-sm text-gray-600 mb-3">Oppdag andre steder på Frøya med tilknytning til historie og kultur:</p>
+                        <ul class="list-disc list-inside text-gray-700 space-y-1">
+                            <li><a href="[lenke-til-bygdemuseum].html" class="text-blue-600 hover:underline">Frøya Bygdemuseum</a> - Viser bredere lokalhistorie.</li>
+                            <li><a href="[lenke-til-titran].html" class="text-blue-600 hover:underline">Stabben Fort (Titran)</a> - Krigshistorie.</li>
+                            <li><a href="[lenke-til-kulturhus].html" class="text-blue-600 hover:underline">Frøya Kulturhus</a> - Informasjon og arrangementer.</li>
+                            <li><span class="text-gray-500">[Andre relevante kulturminner...]</span></li>
+                        </ul>
+                    </div>
+
+                </section>
+            </div> </article> </main> <footer class="bg-gray-800 text-gray-300 p-6 mt-12">
+        <div class="container mx-auto text-center">
+            <p>&copy; <span id="year"></span> Kystscan.no - Alle rettigheter forbeholdt.</p>
+            <div class="flex justify-center space-x-4 mt-4">
+                 <a href="[DIN FACEBOOK-URL HER]" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-white transition-colors" aria-label="Følg oss på Facebook">
+                    <svg class="w-6 h-6 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M12 2.04C6.5 2.04 2 6.53 2 12.06C2 17.06 5.69 21.21 10.44 21.96V14.96H7.9V12.06H10.44V9.81C10.44 7.31 11.93 5.96 14.22 5.96C15.31 5.96 16.45 6.15 16.45 6.15V8.62H15.19C13.95 8.62 13.56 9.39 13.56 10.18V12.06H16.34L15.89 14.96H13.56V21.96C18.31 21.21 22 17.06 22 12.06C22 6.53 17.5 2.04 12 2.04Z"/>
+                    </svg>
+                </a>
+                </div>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+     crossorigin=""></script>
+
+    <script>
+        // Set footer year automatically
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        // Initialize Leaflet map
+        // Approximate coordinates for Sistranda Barneskole area
+        const lat = 63.731; // Latitude
+        const lon = 8.825;  // Longitude
+        const mapId = 'map-gamleskolen'; // ID of the map container div
+
+        try {
+            const map = L.map(mapId).setView([lat, lon], 15); // Set initial view and zoom level
+
+            // Add OpenStreetMap tile layer
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            }).addTo(map);
+
+            // Add a marker for Gamleskolen
+            const marker = L.marker([lat, lon]).addTo(map);
+            marker.bindPopup("<b>Frøya Skolemuseum (Gamleskolen)</b><br>Sistranda Barneskole").openPopup(); // Add popup text
+
+        } catch (error) {
+            // Display error message if map fails to load
+            const mapContainer = document.getElementById(mapId);
+            if (mapContainer) {
+                mapContainer.innerHTML = 'Kunne ikke laste kartet. Feil: ' + error.message;
+                mapContainer.style.color = '#dc2626'; // Red color for error
+                mapContainer.style.fontWeight = 'bold';
+            }
+            console.error("Leaflet map initialization failed:", error);
+        }
+
+        // Add JavaScript for image gallery modal/lightbox later if needed
+        // Add JavaScript for audio player enhancements later if needed
+
+    </script>
+    </body>
+</html>
